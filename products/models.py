@@ -1,8 +1,10 @@
 from django.db import models
 import os
 import random
+from django.conf import settings
 from django.db.models.signals import pre_save, post_save
 from django.urls import reverse
+
 
 from .utils import unique_slug_generator
 
@@ -30,7 +32,6 @@ class ProductQuerySet(models.query.QuerySet):
     def featured(self):
         return self.filter(featured=True, active=True)
 
-
 class ProductManager(models.Manager):
     def get_queryset(self):
         return ProductQuerySet(self.model, using=self._db)
@@ -38,30 +39,30 @@ class ProductManager(models.Manager):
     def all(self):
         return self.get_queryset().active()
 
-    def featured(self):  # Product.objects.featured()
+    def featured(self): #Product.objects.featured() 
         return self.get_queryset().featured()
 
     def get_by_id(self, id):
-        qs = self.get_queryset().filter(id=id)  # Product objects
+        qs = self.get_queryset().filter(id=id) # Product.objects == self.get_queryset()
         if qs.count() == 1:
             return qs.first()
         return None
 
+    def search(self, query):
+        return self.get_queryset().active().search(query)
 
 class Product(models.Model):
     title = models.CharField(max_length=120)
     slug = models.SlugField(blank=True, unique=True)
     description = models.TextField()
     price = models.DecimalField(decimal_places=2, max_digits=20, default=39.99)
-    image = models.ImageField(
-        upload_to=upload_image_path, null=True, blank=True)
+    image = models.ImageField(upload_to = upload_image_path, null=True, blank=True)
     featured = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
 
     objects = ProductManager()
 
     def get_absolute_url(self):
-        # return "/products/{slug}/".format(slug = self.slug)
         return reverse("products:detail", kwargs={"slug": self.slug})
 
     def __str__(self):

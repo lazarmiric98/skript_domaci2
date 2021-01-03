@@ -12,24 +12,21 @@
     <h1><b>{{ title }}</b></h1>
     <h1>Pick the best to be the best!</h1>
 </div>
-<div class='container'>
-    <div class='row'>
-        <div class='col'>
-            <center>
-                <img src="{% static 'img/ecommerce.jpeg' %}" class='img-fluid' />
-            </center>
-        </div>
+<div class='row'>
+    <div class='col'>
+        <center>
+            <img src="{% static 'img/ecommerce.jpeg' %}" class='img-fluid' />
+        </center>
     </div>
-    {% if request.user.in_authenticated %}
-    <div class='row'>
-        <div class='col'>
-            <h1>Premium</h1>
-            {{ premium_content }}
-        </div>
-    </div>
-    {% endif %}
 </div>
-
+{% if request.user.in_authenticated %}
+<div class='row'>
+    <div class='col'>
+        <h1>Premium</h1>
+        {{ premium_content }}
+    </div>
+</div>
+{% endif %}
 
 {% endblock %}
 
